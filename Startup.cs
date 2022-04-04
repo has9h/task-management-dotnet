@@ -44,6 +44,15 @@ namespace TaskManagement
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskManagement", Version = "v1" });
             });
+
+            // Allow external domain access to API using CORS
+            services.AddCors(options => 
+            {
+                options.AddDefaultPolicy(builder => 
+                {
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +68,8 @@ namespace TaskManagement
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

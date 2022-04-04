@@ -21,8 +21,9 @@ namespace TaskManagement.Repository
         {
             _context = context;
         }
-        // Get instance of DbContext to read data from database,
-        // using DI
+
+        // Get instance of DbContext to read data from database, using DI
+        // GET : ALL
         public async Task<List<TaskModel>> GetAllTasksAsync()
         {
             // Convert list of Tasks to list of TaskModel
@@ -30,25 +31,35 @@ namespace TaskManagement.Repository
             {
                 Id = x.Id,
                 Title = x.Title,
-                Description = x.Description
+                Description = x.Description,
+                Progress = x.Progress,
+                Status = (Model.Status) x.Status,
+                DateCreated = x.DateCreated,
+                DateUpdated = x.DateUpdated
             }).ToListAsync();
 
             return records;
         }
 
+        // GET : ID
         public async Task<TaskModel> GetTaskByIdAsync(int taskId)
         {
             // Convert list of Tasks to list of TaskModel
             var record = await _context.Tasks.Where(item => item.Id == taskId).Select(item => new TaskModel()
-                {
-                    Id = item.Id,
-                    Title = item.Title,
-                    Description = item.Description
-                }).FirstOrDefaultAsync();
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Description = item.Description,
+                Progress = item.Progress,
+                Status = (Model.Status) item.Status,
+                DateCreated = item.DateCreated,
+                DateUpdated = item.DateUpdated
+            }).FirstOrDefaultAsync();
 
             return record;
         }
-
+        
+        // GET : TITLE
         public async Task<TaskModel> GetTaskByTitleAsync(string title)
         {
             // Convert list of Tasks to list of TaskModel
@@ -57,19 +68,29 @@ namespace TaskManagement.Repository
             {
                 Id = item.Id,
                 Title = item.Title,
-                Description = item.Description
+                Description = item.Description,
+                Status = (Model.Status) item.Status,
+                Progress = item.Progress,
+                DateCreated = item.DateCreated,
+                DateUpdated = item.DateUpdated
             }).FirstOrDefaultAsync();
 
             return record;
         }
 
+        // POST
         public async Task<int> AddTaskAsync(TaskModel taskmodel)
         {
+            DateTime currentTime = DateTime.Now;
             // Convert object from TaskModel to Task
             var task = new Tasks()
             {
                 Title = taskmodel.Title,
-                Description = taskmodel.Description
+                Description = taskmodel.Description,
+                Progress = taskmodel.Progress,
+                Status = (Data.Status) taskmodel.Progress,
+                DateCreated = currentTime,
+                DateUpdated = currentTime
             };
 
             // Tell DbContext to add new record
@@ -81,18 +102,27 @@ namespace TaskManagement.Repository
             return task.Id;
         }
 
+        // PUT
         public async Task UpdateTaskAsync(int taskId, TaskModel taskmodel)
         {
-            var record = new Tasks()
+            /// <remarks>
+            /// Not optimized, as two queries are made here
+            /// </remarks>
+            // Fetch data using Id, then update required fields
+            var record = await _context.Tasks.FindAsync(taskId);
+            
+            // Id exists
+            if (record != null)
             {
-                Id = taskId,
-                Title = taskmodel.Title,
-                Description = taskmodel.Description
-            };
+                record.Title = taskmodel.Title;
+                record.Description = taskmodel.Description;
+                record.Progress = taskmodel.Progress;
+                record.Status = (Data.Status) taskmodel.Status;
+                record.DateCreated = record.DateCreated;
+                record.DateUpdated = DateTime.Now;
 
-            // Update if changes exist
-            _context.Tasks.Update(record);
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
         }
 
         // PATCH
