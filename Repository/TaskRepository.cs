@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,18 +83,46 @@ namespace TaskManagement.Repository
 
         public async Task UpdateTaskAsync(int taskId, TaskModel taskmodel)
         {
-            // Fetch data using id, update Db using the updated values in taskModel
+            var record = new Tasks()
+            {
+                Id = taskId,
+                Title = taskmodel.Title,
+                Description = taskmodel.Description
+            };
+
+            // Update if changes exist
+            _context.Tasks.Update(record);
+            await _context.SaveChangesAsync();
+        }
+
+        // PATCH
+        public async Task PatchTaskAsync(int taskId, JsonPatchDocument taskModel)
+        {
             var task = await _context.Tasks.FindAsync(taskId);
 
-            // Id exists
+            // If record exists
             if (task != null)
             {
-                task.Title = taskmodel.Title;
-                task.Description = taskmodel.Description;
-
-                // Update if changes exist
+                taskModel.ApplyTo(task);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        // DELETE
+        public async Task DeleteTaskAsync(int taskId)
+        {
+            // Fetch record by title, or some other value
+            // If primary key is unknown
+            // var task = _context.Tasks.Where(item => item.Title == "").FirstOrDefault();
+
+            // If primary key is known, single Db query can be made
+            var task = new Tasks()
+            {
+                Id = taskId
+            };
+
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -33,11 +33,13 @@ namespace TaskManagement
             services.AddDbContext<TaskContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("TasksDbConfig")));
 
-            services.AddControllers();
+            // Support for making PATCH requests
+            services.AddControllers().AddNewtonsoftJson();
 
             // Add transient service
             services.AddTransient<ITaskRepository, TaskRepository>();
 
+            // Built-in API handler
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TaskManagement", Version = "v1" });

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using TaskManagement.Model;
 using TaskManagement.Repository;
@@ -38,6 +39,8 @@ namespace TaskManagement.Controllers
             return Ok(task);
         }
 
+        // GET tasks by title as well as ID
+        // Generally more user-friendly
         [HttpGet("{title}")]
         public async Task<IActionResult> GetTaskByTitle([FromRoute] string title)
         {
@@ -61,7 +64,21 @@ namespace TaskManagement.Controllers
         public async Task<IActionResult> UpdateTask([FromRoute] int id, [FromBody] TaskModel taskModel)
         {
             await _taskRepository.UpdateTaskAsync(id, taskModel);
-            return Ok();
+            return Ok(id);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchTask([FromRoute] int id, [FromBody] JsonPatchDocument taskModel)
+        {
+            await _taskRepository.PatchTaskAsync(id, taskModel);
+            return Ok(id);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTask([FromRoute] int id)
+        {
+            await _taskRepository.DeleteTaskAsync(id);
+            return Ok(id);
         }
     }
 }
