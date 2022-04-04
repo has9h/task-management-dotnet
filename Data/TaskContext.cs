@@ -15,8 +15,10 @@ namespace TaskManagement.Data
 
         }
 
-        // Add new class to context class using DbSet
-        // Creates the table in Db using the name given
+        /// <summary>
+        /// Add new class to context class using DbSet
+        /// Creates the table in Db using the name 
+        /// </summary>
         public DbSet<Tasks> Tasks { get; set; }
 
         // Set up connection string to communicate with DB

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TaskManagement.Data
+namespace TaskManagement.Model
 {
-    /// <summary>
-    /// Class used for migration and updating database 
-    /// </summary>
-    public class Tasks
+    public class TaskModel
     {
+        /// <summary>
+        /// Schema for Task table
+        /// </summary>
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
