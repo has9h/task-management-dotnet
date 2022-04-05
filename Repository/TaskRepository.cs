@@ -88,7 +88,7 @@ namespace TaskManagement.Repository
                 Title = taskmodel.Title,
                 Description = taskmodel.Description,
                 Progress = taskmodel.Progress,
-                Status = (Data.Status) taskmodel.Progress,
+                Status = (Data.Status) taskmodel.Status,
                 DateCreated = currentTime,
                 DateUpdated = currentTime
             };
